@@ -126,16 +126,43 @@ fun BarisRingkasan(label: String, nilai: String, tebal: Boolean = false) {
 }
 
 @Composable
-fun KartuPenjualan(entri: PenjualanIkan, onHapus: () -> Unit) {
+fun KartuPenjualan( entri: PenjualanIkan, onHapus: () -> Unit) {
     val hasil = hitungPenjualan(entri)
-    Card(Modifier.fillMaxWidth()) {
-        Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-            Column(Modifier.weight(1f)) {
-                Text("${entri.jenis} • ${entri.mutu}", fontWeight = FontWeight.Bold)
-                Text("%.2f kg × %s/kg".format(entri.beratKg, rupiah(hasil.hargaDisesuaikan)))
-                Text("Nilai: ${rupiah(hasil.nilaiPenjualan)}")
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    text = entri.jenis,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                Text("Mutu: ${entri.mutu}")
+                Text("Berat: %.2f kg".format(entri.beratKg))
+                Text("Harga/kg: ${rupiah(hasil.hargaDisesuaikan)}")
+                Text(
+                    text = "Total: ${rupiah(hasil.nilaiPenjualan)}",
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.primary
+                )
             }
-            TextButton(onClick = onHapus) { Text("Hapus") }
+
+            TextButton(onClick = onHapus) {
+                Text(
+                    text = "Hapus",
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
         }
     }
-}
