@@ -173,3 +173,138 @@ Card( modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp), ele
         }
     }
 }
+
+
+@Composable
+fun KartuPenjualan(
+    entri: PenjualanIkan,
+    onHapus: () -> Unit
+) {
+    val hasil = hitungPenjualan(entri)
+    var tampilDialogHapus by remember { mutableStateOf(false) }
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = entri.jenis,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "Mutu: ${entri.mutu}",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+
+                Text(
+                    text = "#${entri.id}",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            HorizontalDivider()
+
+            BarisRingkasan(
+                "Berat ikan",
+                "%.2f kg".format(entri.beratKg)
+            )
+
+            BarisRingkasan(
+                "Harga per kg",
+                rupiah(entri.hargaPerKg)
+            )
+
+            if (entri.mutu == "Kurang segar") {
+                BarisRingkasan(
+                    "Potongan mutu (25%)",
+                    rupiah(entri.hargaPerKg * 0.25)
+                )
+
+                BarisRingkasan(
+                    "Harga setelah penyesuaian",
+                    rupiah(hasil.hargaDisesuaikan)
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        "Nilai penjualan",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Text(
+                        rupiah(hasil.nilaiPenjualan),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+
+                TextButton(
+                    onClick = { tampilDialogHapus = true }
+                ) {
+                    Text(
+                        "Hapus",
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            }
+        }
+    }
+
+    if (tampilDialogHapus) {
+        AlertDialog(
+            onDismissRequest = {
+                tampilDialogHapus = false
+            },
+            title = {
+                Text("Hapus penjualan?")
+            },
+            text = {
+                Text(
+                    "Transaksi ${entri.jenis} seberat " +
+                    "${"%.2f".format(entri.beratKg)} kg " +
+                    "akan dihapus dari daftar. " +
+                    "Apakah kamu yakin?"
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onHapus()
+                        tampilDialogHapus = false
+                    }
+                ) {
+                    Text(
+                        "Ya, hapus",
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        tampilDialogHapus = false
+                    }
+                ) {
+                    Text("Batal")
+                }
+            }
+        )
+    }
+}
